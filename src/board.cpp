@@ -5,7 +5,7 @@ Board::Board() {
 }
 
 Piece** Board::generateBoard(const char* FILENAME) {
-	remove("output.txt");
+	srand(time(0));
 	ImportFile* iF = new ImportFile(FILENAME);
 	int** places = iF->getPositions();
 	Piece** positions = new Piece*[8];
@@ -35,9 +35,10 @@ Piece** Board::getBoard() {
 	return board;
 }
 
-void Board::makeMove(bool teamRed) {
-	FILE* oFile = fopen("output.txt", "a");
+void Board::makeMove(FILE* oFile, bool teamRed) {
 	fprintf(oFile, "--- NEW MOVE --- \n");
+	std::cout << "--- NEW MOVE ---" << std::endl;
+	int numMovesConsidered = 0;
 	int moves[4][2] = {{1,-1},{1,1},{-1,-1},{-1,1}};
 	bool willJump = false;
 	bool willMove = false;
@@ -68,7 +69,9 @@ void Board::makeMove(bool teamRed) {
 				else {
 					dir = 4;
 				}
-				for(int x = 0; x < dir; x++) {
+				int d = rand() % dir;
+				for(int b = 0; b < dir; b++) {
+					int x = (b + d) % dir;
 					int testMoveX = r + moves[x][0];
 					int testMoveY = c + moves[x][1];
 					int testJumpX = r + moves[x][0] * 2;
@@ -78,6 +81,7 @@ void Board::makeMove(bool teamRed) {
 						bool canJump = testJumpX >= 0 && testJumpX < 8 && testJumpY >= 0 && testJumpY < 8 && board[testJumpX][testJumpY].getBlank();
 						if(canJump && board[testMoveX][testMoveY].getRedTeam() != teamRed && !board[testMoveX][testMoveY].getBlank()) {
 							putMoveInFile(oFile, r, c, testJumpX, testJumpY, " -->? ");
+							numMovesConsidered++;
 							willJump = true;
 							willMove = true;
 							moveFromX = r;
@@ -91,6 +95,7 @@ void Board::makeMove(bool teamRed) {
 					if(!willJump && canMove && !willMove) {
 						if(board[testMoveX][testMoveY].getBlank()) {
 							putMoveInFile(oFile, r, c, testMoveX, testMoveY, " ->? ");
+							numMovesConsidered++;
 							bestMoveX = testMoveX;
 							bestMoveY = testMoveY;
 							willMove = true;
@@ -104,14 +109,21 @@ void Board::makeMove(bool teamRed) {
 	}
 	if(willMove) {
 		std::cout << "Piece at " << moveFromX << " " << moveFromY << " has moved to " << bestMoveX << " " << bestMoveY << "\n";
+		board[bestMoveX][bestMoveY].setKing(board[moveFromX][moveFromY].getKing());
 		board[bestMoveX][bestMoveY].setBlank(board[moveFromX][moveFromY].getBlank());
 		board[moveFromX][moveFromY].setBlank(true);
 		board[bestMoveX][bestMoveY].setRedTeam(board[moveFromX][moveFromY].getRedTeam());
-		board[bestMoveX][bestMoveY].setKing(board[moveFromX][moveFromY].getKing());
+		if(bestMoveX == 7 && teamRed) {
+			board[bestMoveX][bestMoveY].setKing(true);
+		}
+		if(bestMoveX == 0 && !teamRed) {
+			board[bestMoveX][bestMoveY].setKing(true);
+		}
 		if(willJump) {
-			putMoveInFile(oFile, moveFromX, moveFromY, bestMoveX, bestMoveY, " --> ");
 			std::cout << "It jumped over the piece at " << destroyX << " " << destroyY << std::endl;
 			board[destroyX][destroyY].setBlank(true);
+			putMoveInFile(oFile, moveFromX, moveFromY, bestMoveX, bestMoveY, " --> ");
+			displayBoard(oFile);
 			// Multi-jump?
 			bool multiJump = true;
 			bool canJump = false;
@@ -120,7 +132,9 @@ void Board::makeMove(bool teamRed) {
 				det = 4;
 			}
 			while(multiJump) {
-				for(int x = 0; x < det; x++) {
+				int d = rand() % det;
+				for(int b = 0; b < det; b++) {
+					int x = (b + d) % det;
 					if(!canJump) {
 						int testMoveX = bestMoveX + moves[x][0];
 						int testMoveY = bestMoveY + moves[x][1];
@@ -136,6 +150,7 @@ void Board::makeMove(bool teamRed) {
 							destroyX = testMoveX;
 							destroyY = testMoveY;
 							putMoveInFile(oFile, moveFromX, moveFromY, bestMoveX, bestMoveY, " --->? ");
+							numMovesConsidered++;
 						}
 					}
 				}
@@ -147,31 +162,31 @@ void Board::makeMove(bool teamRed) {
 					// Can do another jumped
 					std::cout << "Piece at " << moveFromX << " " << moveFromY << " has jumped again to " << bestMoveX << " " << bestMoveY << "\n";
 					std::cout << "It jumped over the piece at " << destroyX << " " << destroyY << std::endl;
-					if(bestMoveX == 7 && teamRed) {
-						board[moveFromX][moveFromY].setKing(true);
-					}
-					if(bestMoveX == 0 && !teamRed) {
-						board[moveFromX][moveFromY].setKing(true);
-					}
+					board[bestMoveX][bestMoveY].setKing(board[moveFromX][moveFromY].getKing());
 					board[bestMoveX][bestMoveY].setBlank(board[moveFromX][moveFromY].getBlank());
 					board[moveFromX][moveFromY].setBlank(true);
 					board[bestMoveX][bestMoveY].setRedTeam(board[moveFromX][moveFromY].getRedTeam());
-					board[bestMoveX][bestMoveY].setKing(board[moveFromX][moveFromY].getKing());
+					if(bestMoveX == 7 && teamRed) {
+						board[bestMoveX][bestMoveY].setKing(true);
+					}
+					if(bestMoveX == 0 && !teamRed) {
+						board[bestMoveX][bestMoveY].setKing(true);
+					}
 					board[destroyX][destroyY].setBlank(true);
 					putMoveInFile(oFile, moveFromX, moveFromY, bestMoveX, bestMoveY, " ---> ");
+					displayBoard(oFile);
 					canJump = false;
 				}
 			}
 		}
 		else {
 			putMoveInFile(oFile, moveFromX, moveFromY, bestMoveX, bestMoveY, " -> ");
+			displayBoard(oFile);
 		}
-		if(bestMoveX == 7 && teamRed) {
-			board[bestMoveX][bestMoveY].setKing(true);
-		}
-		if(bestMoveX == 0 && !teamRed) {
-			board[bestMoveX][bestMoveY].setKing(true);
-		}
+		fprintf(oFile, "Considered moves: ");
+		fprintf(oFile, "%d", numMovesConsidered);
+		fprintf(oFile, "\n");
+		std::cout << "Considered moves: " << numMovesConsidered << std::endl;
 	}
 	else {
 		std::cout << "A move could not be found for team ";
@@ -185,7 +200,6 @@ void Board::makeMove(bool teamRed) {
 			fprintf(oFile, "X ---\n");
 		}
 	}
-	fclose(oFile);
 }
 
 void Board::putMoveInFile(FILE* oFile, int r, int c, int testMoveX, int testMoveY, const char* arrow) {
@@ -199,30 +213,36 @@ void Board::putMoveInFile(FILE* oFile, int r, int c, int testMoveX, int testMove
 	fprintf(oFile, "\n");
 }
 
-void Board::displayBoard() {
+void Board::displayBoard(FILE* oFile) {
 	Piece** pieces = getBoard();
 	for(int r = 0; r < 8; r++) {
 		for(int c = 0; c < 8; c++) {
 			if(pieces[r][c].getBlank()) {
+				fprintf(oFile, "[ ]");
 				std::cout << "[ ]";
 			}
 			else if(pieces[r][c].getRedTeam()) {
 				if(pieces[r][c].getKing()) {
+					fprintf(oFile, "{0}");
 					std::cout << "{O}";
 				}
 				else {
+					fprintf(oFile, "[0]");
 					std::cout << "[O]";
 				}
 			}
 			else {
 				if(pieces[r][c].getKing()) {
+					fprintf(oFile, "{X}");
 					std::cout << "{X}";
 				}
 				else {
+					fprintf(oFile, "[X]");
 					std::cout << "[X]";
 				}
 			}
 		}
+		fprintf(oFile, "\n");
 		std::cout << std::endl;
 	}
 }

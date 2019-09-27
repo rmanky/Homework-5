@@ -3,7 +3,7 @@
 
 #include "importFile.h"
 #include "piece.h"
-#include <string>
+#include <time.h>
 
 class Board {
 private:
@@ -13,9 +13,9 @@ public:
 Board();
 Piece** generateBoard(const char*);
 Piece** getBoard();
-void makeMove(bool);
+void makeMove(FILE*, bool);
 void putMoveInFile(FILE*, int, int, int, int, const char*);
-void displayBoard();
+void displayBoard(FILE*);
 };
 
 

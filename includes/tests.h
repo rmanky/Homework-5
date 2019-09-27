@@ -21,6 +21,8 @@ bool testThreeMoves(const char*);
 
 bool testTenMoves(const char*);
 
-bool testHunderedMoves(const char*);
+bool testThirtyMoves(const char*);
+
+bool testOutputFile(const char*, const char*);
 
 #endif

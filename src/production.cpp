@@ -3,6 +3,7 @@ using namespace std;
 
 void production(int argc, char** argv)
 {
+	FILE* oFile = fopen("output.txt", "w");
 	cout << " --- --- --- --- --- ---" << endl;
 	cout << " --- --- --- --- --- ---" << endl;
 	cout << " --- --- --- --- --- ---" << endl;
@@ -18,8 +19,7 @@ void production(int argc, char** argv)
 		int i = 0;
 		while(i < numMoves) {
 			i++;
-			board->makeMove(i % 2 != 0);
-			board->displayBoard();
+			board->makeMove(oFile, i % 2 != 0);
 		}
 		cout << "GAME OVER" << endl;
 		delete board;
@@ -29,12 +29,12 @@ void production(int argc, char** argv)
 		int i = 0;
 		while(checkForMissing(pieces)) {
 			i++;
-			board->makeMove(i % 2 != 0);
-			board->displayBoard();
+			board->makeMove(oFile, i % 2 != 0);
 		}
 		cout << "GAME OVER" << endl;
 		delete board;
 	}
+	fclose(oFile);
 }
 
 bool checkForMissing(Piece** board) {

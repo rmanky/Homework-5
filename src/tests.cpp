@@ -8,7 +8,7 @@ bool tests()
 {
 	bool ok = testLoadFile(fName) && testPiece() && testBoard(fName)
 	          && testMove(fName) && testThreeMoves(fName)
-	          && testTenMoves(fName) && testHunderedMoves(fName);
+	          && testTenMoves(fName) && testThirtyMoves(fName) && testOutputFile(fName, "output.txt");
 	return ok;
 }
 
@@ -49,10 +49,11 @@ bool testPiece() {
 }
 
 bool testBoard(const char* FILENAME) {
+	cout << " --- TEST STARTING BOARD ---" << endl;
 	bool answer = false;
 	Board* board = new Board();
 	board->generateBoard(FILENAME);
-	board->displayBoard();
+	board->displayBoard(NULL);
 	delete board;
 	cout << "This is the starting board" << endl;
 	cout << "Does this look correct? (y/n)" << endl;
@@ -65,16 +66,12 @@ bool testBoard(const char* FILENAME) {
 }
 
 bool testMove(const char* FILENAME) {
+	cout << " --- TEST TWO MOVES ---" << endl;
 	bool answer = false;
 	Board* board = new Board();
 	board->generateBoard(FILENAME);
-	board->displayBoard();
-	cout << "--- MAKING MOVE ---" << endl;
-	board->makeMove(true);
-	board->displayBoard();
-	cout << "--- MAKING MOVE SECOND MOVE ---" << endl;
-	board->makeMove(false);
-	board->displayBoard();
+	board->makeMove(NULL, true);
+	board->makeMove(NULL, false);
 	delete board;
 	cout << "The board has made two moves" << endl;
 	cout << "Does this look correct? (y/n)" << endl;
@@ -91,16 +88,9 @@ bool testThreeMoves(const char* FILENAME) {
 	bool answer = false;
 	Board* board = new Board();
 	board->generateBoard(FILENAME);
-	board->displayBoard();
-	cout << "--- MAKING MOVE ---" << endl;
-	board->makeMove(true);
-	board->displayBoard();
-	cout << "--- MAKING MOVE SECOND MOVE ---" << endl;
-	board->makeMove(false);
-	board->displayBoard();
-	cout << "--- MAKING MOVE THIRD MOVE ---" << endl;
-	board->makeMove(true);
-	board->displayBoard();
+	board->makeMove(NULL, true);
+	board->makeMove(NULL, false);
+	board->makeMove(NULL, true);
 	delete board;
 	cout << "The board has made three moves" << endl;
 	cout << "Does this look correct? (y/n)" << endl;
@@ -118,8 +108,7 @@ bool testTenMoves(const char* FILENAME) {
 	Board* board = new Board();
 	board->generateBoard(FILENAME);
 	for(int i = 0; i < 10; i++) {
-		board->makeMove(i % 2 == 0);
-		board->displayBoard();
+		board->makeMove(NULL, i % 2 == 0);
 	}
 	delete board;
 	cout << "The board has made ten moves" << endl;
@@ -132,19 +121,41 @@ bool testTenMoves(const char* FILENAME) {
 	return answer;
 }
 
-bool testHunderedMoves(const char* FILENAME) {
+bool testThirtyMoves(const char* FILENAME) {
 	cout << " --- TEST THIRTY MOVES ---" << endl;
 	bool answer = false;
 	Board* board = new Board();
 	board->generateBoard(FILENAME);
 	for(int i = 0; i < 30; i++) {
-		board->makeMove(i % 2 == 0);
-		board->displayBoard();
+		board->makeMove(NULL, i % 2 == 0);
 	}
 	delete board;
 	cout << "The board has made thirty moves" << endl;
 	cout << "King O's look like {O} and King X's look like {X}" << endl;
 	cout << "Does this look correct? (y/n)" << endl;
+	char c = getchar();
+	getchar();
+	if(c == 'y') {
+		answer = true;
+	}
+	return answer;
+}
+
+bool testOutputFile(const char* FILENAME, const char* OUTPUTFILE) {
+	cout << " --- TEST TEN MOVES AND OUTPUT ---" << endl;
+	bool answer = false;
+	Board* board = new Board();
+	board->generateBoard(FILENAME);
+	FILE* oFile = fopen(OUTPUTFILE, "w");
+	for(int i = 0; i < 10; i++) {
+		board->makeMove(oFile, i % 2 == 0);
+	}
+	delete board;
+	cout << "The board has made ten moves" << endl;
+	cout << "They have been placed in output.txt" << endl;
+	cout << "King O's look like {O} and King X's look like {X}" << endl;
+	cout << "Does this look correct? (y/n)" << endl;
+	fclose(oFile);
 	char c = getchar();
 	getchar();
 	if(c == 'y') {
