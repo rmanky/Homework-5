@@ -37,7 +37,7 @@ Piece** Board::getBoard() {
 
 void Board::makeMove(FILE* oFile, bool teamRed) {
 	fprintf(oFile, "--- NEW MOVE --- \n");
-	std::cout << "--- NEW MOVE ---" << std::endl;
+	std::cout << " --- NEW MOVE --- " << std::endl;
 	int numMovesConsidered = 0;
 	int moves[4][2] = {{1,-1},{1,1},{-1,-1},{-1,1}};
 	bool willJump = false;
