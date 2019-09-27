@@ -51,21 +51,8 @@ bool testPiece() {
 bool testBoard(const char* FILENAME) {
 	bool answer = false;
 	Board* board = new Board();
-	Piece** pieces = board->generateBoard(FILENAME);
-	for(int r = 0; r < 8; r++) {
-		for(int c = 0; c < 8; c++) {
-			if(pieces[r][c].getBlank()) {
-				cout << "[ ]";
-			}
-			else if(pieces[r][c].getRedTeam()) {
-				cout << "[O]";
-			}
-			else {
-				cout << "[X]";
-			}
-		}
-		cout << endl;
-	}
+	board->generateBoard(FILENAME);
+	board->displayBoard();
 	delete board;
 	cout << "This is the starting board" << endl;
 	cout << "Does this look correct? (y/n)" << endl;
@@ -80,55 +67,14 @@ bool testBoard(const char* FILENAME) {
 bool testMove(const char* FILENAME) {
 	bool answer = false;
 	Board* board = new Board();
-	Piece** pieces = board->generateBoard(FILENAME);
-	for(int r = 0; r < 8; r++) {
-		for(int c = 0; c < 8; c++) {
-			if(pieces[r][c].getBlank()) {
-				cout << "[ ]";
-			}
-			else if(pieces[r][c].getRedTeam()) {
-				cout << "[O]";
-			}
-			else {
-				cout << "[X]";
-			}
-		}
-		cout << endl;
-	}
+	board->generateBoard(FILENAME);
+	board->displayBoard();
 	cout << "--- MAKING MOVE ---" << endl;
 	board->makeMove(true);
-	pieces = board->getBoard();
-	for(int r = 0; r < 8; r++) {
-		for(int c = 0; c < 8; c++) {
-			if(pieces[r][c].getBlank()) {
-				cout << "[ ]";
-			}
-			else if(pieces[r][c].getRedTeam()) {
-				cout << "[O]";
-			}
-			else {
-				cout << "[X]";
-			}
-		}
-		cout << endl;
-	}
+	board->displayBoard();
 	cout << "--- MAKING MOVE SECOND MOVE ---" << endl;
 	board->makeMove(false);
-	pieces = board->getBoard();
-	for(int r = 0; r < 8; r++) {
-		for(int c = 0; c < 8; c++) {
-			if(pieces[r][c].getBlank()) {
-				cout << "[ ]";
-			}
-			else if(pieces[r][c].getRedTeam()) {
-				cout << "[O]";
-			}
-			else {
-				cout << "[X]";
-			}
-		}
-		cout << endl;
-	}
+	board->displayBoard();
 	delete board;
 	cout << "The board has made two moves" << endl;
 	cout << "Does this look correct? (y/n)" << endl;
@@ -144,72 +90,17 @@ bool testThreeMoves(const char* FILENAME) {
 	cout << " --- TEST THREE MOVES ---" << endl;
 	bool answer = false;
 	Board* board = new Board();
-	Piece** pieces = board->generateBoard(FILENAME);
-	for(int r = 0; r < 8; r++) {
-		for(int c = 0; c < 8; c++) {
-			if(pieces[r][c].getBlank()) {
-				cout << "[ ]";
-			}
-			else if(pieces[r][c].getRedTeam()) {
-				cout << "[O]";
-			}
-			else {
-				cout << "[X]";
-			}
-		}
-		cout << endl;
-	}
+	board->generateBoard(FILENAME);
+	board->displayBoard();
 	cout << "--- MAKING MOVE ---" << endl;
 	board->makeMove(true);
-	pieces = board->getBoard();
-	for(int r = 0; r < 8; r++) {
-		for(int c = 0; c < 8; c++) {
-			if(pieces[r][c].getBlank()) {
-				cout << "[ ]";
-			}
-			else if(pieces[r][c].getRedTeam()) {
-				cout << "[O]";
-			}
-			else {
-				cout << "[X]";
-			}
-		}
-		cout << endl;
-	}
+	board->displayBoard();
 	cout << "--- MAKING MOVE SECOND MOVE ---" << endl;
 	board->makeMove(false);
-	pieces = board->getBoard();
-	for(int r = 0; r < 8; r++) {
-		for(int c = 0; c < 8; c++) {
-			if(pieces[r][c].getBlank()) {
-				cout << "[ ]";
-			}
-			else if(pieces[r][c].getRedTeam()) {
-				cout << "[O]";
-			}
-			else {
-				cout << "[X]";
-			}
-		}
-		cout << endl;
-	}
+	board->displayBoard();
 	cout << "--- MAKING MOVE THIRD MOVE ---" << endl;
 	board->makeMove(true);
-	pieces = board->getBoard();
-	for(int r = 0; r < 8; r++) {
-		for(int c = 0; c < 8; c++) {
-			if(pieces[r][c].getBlank()) {
-				cout << "[ ]";
-			}
-			else if(pieces[r][c].getRedTeam()) {
-				cout << "[O]";
-			}
-			else {
-				cout << "[X]";
-			}
-		}
-		cout << endl;
-	}
+	board->displayBoard();
 	delete board;
 	cout << "The board has made three moves" << endl;
 	cout << "Does this look correct? (y/n)" << endl;
@@ -225,23 +116,10 @@ bool testTenMoves(const char* FILENAME) {
 	cout << " --- TEST TEN MOVES ---" << endl;
 	bool answer = false;
 	Board* board = new Board();
-	Piece** pieces = board->generateBoard(FILENAME);
+	board->generateBoard(FILENAME);
 	for(int i = 0; i < 10; i++) {
 		board->makeMove(i % 2 == 0);
-		for(int r = 0; r < 8; r++) {
-			for(int c = 0; c < 8; c++) {
-				if(pieces[r][c].getBlank()) {
-					cout << "[ ]";
-				}
-				else if(pieces[r][c].getRedTeam()) {
-					cout << "[O]";
-				}
-				else {
-					cout << "[X]";
-				}
-			}
-			cout << endl;
-		}
+		board->displayBoard();
 	}
 	delete board;
 	cout << "The board has made ten moves" << endl;
@@ -255,39 +133,16 @@ bool testTenMoves(const char* FILENAME) {
 }
 
 bool testHunderedMoves(const char* FILENAME) {
-	cout << " --- TEST ONE HUNDRED MOVES ---" << endl;
+	cout << " --- TEST THIRTY MOVES ---" << endl;
 	bool answer = false;
 	Board* board = new Board();
-	Piece** pieces = board->generateBoard(FILENAME);
-	for(int i = 0; i < 100; i++) {
+	board->generateBoard(FILENAME);
+	for(int i = 0; i < 30; i++) {
 		board->makeMove(i % 2 == 0);
-		for(int r = 0; r < 8; r++) {
-			for(int c = 0; c < 8; c++) {
-				if(pieces[r][c].getBlank()) {
-					cout << "[ ]";
-				}
-				else if(pieces[r][c].getRedTeam()) {
-					if(pieces[r][c].getKing()) {
-						cout << "{O}";
-					}
-					else {
-						cout << "[O]";
-					}
-				}
-				else {
-					if(pieces[r][c].getKing()) {
-						cout << "{X}";
-					}
-					else {
-						cout << "[X]";
-					}
-				}
-			}
-			cout << endl;
-		}
+		board->displayBoard();
 	}
 	delete board;
-	cout << "The board has made a hundred moves" << endl;
+	cout << "The board has made thirty moves" << endl;
 	cout << "King O's look like {O} and King X's look like {X}" << endl;
 	cout << "Does this look correct? (y/n)" << endl;
 	char c = getchar();
